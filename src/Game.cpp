@@ -15,8 +15,9 @@ using namespace std;
 
 
 const int thickness = 15;//sera usado para setar a altura de alguns objetos
-const float paddleHeight = 200.0f;//tamanho da raquete
-const float WINDOW_WIDTH = 600.0f;
+const float paddleHeight = 15.0f;//tamanho da raquete
+const float WINDOW_WIDTH = 1024.0f;
+const float WINDOW_HEIGHT = 600.0f;
 const unsigned int MAXIMUM_NUMBER_OF_BALLS = 5;
 
 Game::Game()
@@ -26,8 +27,6 @@ Game::Game()
 ,mIsRunning(true)//verificar se o jogo ainda deve continuar sendo executado
 ,mPaddleDir1(0)//direcao da bolinha
 ,mPaddleDir2(0)
-,scoreCount(0)
-,scoreCount2(0)
 ,isMultiplayerActive(false)
 {
 	
@@ -48,8 +47,8 @@ bool Game::Initialize()
 		"Game Programming in C++ (Chapter 1)", // Window title
 		100,	// Top left x-coordinate of window
 		100,	// Top left y-coordinate of window
-		1024,	// Width of window
-		static_cast<int>(WINDOW_WIDTH),	// Height of window
+		static_cast<int>(WINDOW_WIDTH),	// Width of window
+		static_cast<int>(WINDOW_HEIGHT),	// Height of window
 		0		// Flags (0 for no flags set)
 	);
 
@@ -72,29 +71,21 @@ bool Game::Initialize()
 		return false;
 	}
 
-	float paddlePositionX = 10.0f;
-	float paddlePositionY = WINDOW_WIDTH / 2.0f;
-
-	paddleFirstPlayer.Initialize(paddlePositionX, paddlePositionY, thickness, paddleHeight, 0);
-
+	float paddlePositionY = WINDOW_HEIGHT - 15.0f;
+	float paddlePositionX = (WINDOW_WIDTH / 4.0f) - 50;
 	
-	mPaddlePos1.x = 10.0f;//posi��o inicial da raquete eixo x
-	mPaddlePos1.y = WINDOW_WIDTH / 2.0f;//posi��o inicial da raquee eixo y
+	paddleFirstPlayer.Initialize(paddlePositionX, paddlePositionY, 100.0f, paddleHeight, 0);
 
-	mPaddlePos2.x = 1000.0f;//posi��o inicial da raquete eixo x
-	mPaddlePos2.y = WINDOW_WIDTH / 2.0f;//posi��o inicial da raquee eixo y
+
 
 	ball.position.x = 1024.0f / 2.0f;
-	ball.position.y = WINDOW_WIDTH / 2.0f;
+	ball.position.y = WINDOW_HEIGHT / 2.0f;
 	ball.velocity.x = -200.0f;
 	ball.velocity.y = 500.0f;
 
 	balls.push_back(ball);
 
 	
-
-	if(!scoreFirstPlayer.Initialize())
-		return false;
 
 	return true;
 }
@@ -134,11 +125,11 @@ void Game::ProcessInput()
 	// Update paddle direction based on W/S keys - atualize a dire��o da raquete com base na entrada do jogador
 	// W -> move a raquete para cima, S -> move a raquete para baixo
 	mPaddleDir1 = 0;
-	if (state[SDL_SCANCODE_W])
+	if (state[SDL_SCANCODE_A])
 	{
 		mPaddleDir1 -= 3;
 	}
-	else if (state[SDL_SCANCODE_S])
+	else if (state[SDL_SCANCODE_D])
 	{
 		mPaddleDir1 += 3;
 	}
@@ -163,12 +154,11 @@ void Game::ProcessInput()
 	{
 		if (!isMultiplayerActive) {
 			float paddlePositionX = 1000.0f;
-			float paddlePositionY = WINDOW_WIDTH / 2.0f;
+			float paddlePositionY = WINDOW_HEIGHT / 2.0f;
 
 			paddleSecondPlayer.Initialize(paddlePositionX, paddlePositionY, thickness, paddleHeight, 0);
-			scoreSecondPlayer.Initialize(520.0f);
+			
 
-			scoreCount = 0;
 			isMultiplayerActive = true;
 		}
 	}
@@ -177,8 +167,7 @@ void Game::ProcessInput()
 	if (state[SDL_SCANCODE_1])
 	{
 		if (isMultiplayerActive) {
-			scoreCount = 0;
-			scoreCount2 = 0;
+
 
 			isMultiplayerActive = false;
 		}
@@ -245,11 +234,11 @@ void Game::updateSingleGame(float deltaTime)
 
 			balls[i].updateBallDirection();
 
-			scoreCount++;
+
 		}
 		else if (balls[i].isBallOutOfLeftSide())
 		{
-			mIsRunning = false;
+			// mIsRunning = false;
 		}
 		else if (balls[i].isBallOutOfRightSide())
 		{
@@ -259,7 +248,7 @@ void Game::updateSingleGame(float deltaTime)
 		{
 			balls[i].reverseBallYDirection();
 		}
-		else if (balls[i].collidesWithBottomWall(WINDOW_WIDTH))
+		else if (balls[i].collidesWithBottomWall(WINDOW_HEIGHT))
 		{
 			balls[i].reverseBallYDirection();
 		}
@@ -310,7 +299,7 @@ void Game::updateMultiplayerGame(float deltaTime)
 		{
 			balls[i].reverseBallYDirection();
 		}
-		else if (balls[i].collidesWithBottomWall(WINDOW_WIDTH))
+		else if (balls[i].collidesWithBottomWall(WINDOW_HEIGHT))
 		{
 			balls[i].reverseBallYDirection();
 		}
@@ -325,14 +314,13 @@ void Game::updateMultiplayerGame(float deltaTime)
 			it = balls.erase(it);
 			ballsSize -= 1;
 
-			scoreCount2 += 1;
 		}
 		else if (balls[j].isBallOutOfRightSide(0))
 		{
 			it = balls.erase(it);
 			ballsSize -= 1;
 
-			scoreCount += 1;
+
 		}
 		else {
 			j++;
@@ -375,7 +363,7 @@ void Game::GenerateOutput()
 	//desenhamos as outras paredes apenas mudando as coordenadas de wall
 
 	// parede de baixo
-	wall.y = static_cast<int>(WINDOW_WIDTH) - thickness;
+	wall.y = static_cast<int>(WINDOW_HEIGHT) - thickness;
 	SDL_RenderFillRect(mRenderer, &wall);
 	
 	SDL_SetRenderDrawColor(mRenderer, 255, 0, 0, 255);
@@ -414,31 +402,6 @@ void Game::GenerateOutput()
 		SDL_RenderFillRect(mRenderer, &paddleSecondPlayerRender);
 
 
-	int decimal = scoreCount / 10;
-	int numeral = scoreCount % 10;
-
-	vector<Led> allLeds = scoreFirstPlayer.checkDrawnLeds(decimal, numeral);
-
-	if (isMultiplayerActive) {
-		decimal = scoreCount2 / 10;
-		numeral = scoreCount2 % 10;
-		vector<Led> secondPlayerLeds = scoreSecondPlayer.checkDrawnLeds(decimal, numeral);
-		allLeds.insert(allLeds.end(), secondPlayerLeds.begin(), secondPlayerLeds.end());
-	}
-
-	SDL_SetRenderDrawColor(mRenderer, 255, 0, 0, 255);
-
-	for (unsigned int i = 0; i < allLeds.size(); i++) {
-		SDL_Rect led{
-		static_cast<int>(allLeds[i].x),
-		static_cast<int>(allLeds[i].y),
-		static_cast<int>(allLeds[i].width),
-		static_cast<int>(allLeds[i].height)
-		};
-		SDL_RenderFillRect(mRenderer, &led);
-	}
-
-	
 	//mudar a cor do renderizador para a bola
 	SDL_SetRenderDrawColor(mRenderer, 255, 255, 0, 255);
 

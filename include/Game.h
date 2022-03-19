@@ -61,8 +61,6 @@ private:
 	Vector2 mPaddlePos1;
 	Vector2 mPaddlePos2;
 
-	int scoreCount;
-	int scoreCount2;
 	bool isMultiplayerActive;
 
 	Ball ball;

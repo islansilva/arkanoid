@@ -1,6 +1,6 @@
 ﻿#include "../include/Paddle.h"
 
-const float windowHalf = 300.0f;//tamanho da tela
+const float windowHalf = 512.0f;//tamanho da tela
 
 
 bool Paddle::Initialize(float x, float y, float width, float height, int direction)
@@ -28,15 +28,15 @@ bool Paddle::isPaddleMoving(int newDirection)
 
 void Paddle::updatePaddlePosition(int newDirection, float deltaTime, int wallWidth)
 {
-	this->y += newDirection * windowHalf * deltaTime;
+	this->x += newDirection * windowHalf * deltaTime;
 
-	if (this->y < (this->height / 2.0f + wallWidth))
+	if (this->x < 0)
 	{
-		this->y = this->height / 2.0f + wallWidth;
+		this->x = 0;
 	}
-	else if (this->y > ((windowHalf * 2) - this->height / 2.0f - wallWidth))
+	else if (this->x > windowHalf - this->width)
 	{
-		this->y = (windowHalf * 2) - this->height / 2.0f - wallWidth;
+		this->x = windowHalf - this->width;
 	}
 }
 
