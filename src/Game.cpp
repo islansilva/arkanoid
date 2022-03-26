@@ -85,7 +85,14 @@ bool Game::Initialize()
 
 	balls.push_back(ball);
 
-	
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 3; j++) {
+			Block bloco;
+			if (bloco.Initialize(100.0f + (i * 30.0f), 100.0f + (j * 50.0f))) {
+				blocos.push_back(bloco);
+			}
+		}
+	}
 
 	return true;
 }
@@ -416,6 +423,24 @@ void Game::GenerateOutput()
 			thickness
 		};
 		SDL_RenderFillRect(mRenderer, &ball);
+
+	}
+
+	SDL_SetRenderDrawColor(mRenderer, 255, 255, 0, 255);
+	int blockSize = blocos.size();
+	//cout<<blockSize<<endl;
+	for (int i = 0; i < blockSize; i++) {
+
+		cout << i << blocos[i].position.x << endl;
+		cout << i << blocos[i].position.y << endl;
+		// Draw ball
+		SDL_Rect block{
+			static_cast<int>(blocos[i].position.x),
+			static_cast<int>(blocos[i].position.y),
+			50,
+			50
+		};
+		SDL_RenderFillRect(mRenderer, &block);
 
 	}
 
