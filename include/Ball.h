@@ -18,14 +18,14 @@ class Ball
 public:
 	Position position;
 	Velocity velocity;
-	bool collidesWithPaddle(float diff, Paddle paddle);
+	bool collidesWithPaddle(Paddle paddle, int ballWidth = 15);
 	void updateBallDirection();
 	void reverseBallXDirection();
 	void reverseBallYDirection();
-	bool isBallOutOfLeftSide();
-	bool isBallOutOfRightSide(int ballWidth = 15);
+	bool isBallOutOfBottomSide(float windowHeight = 600.0f, int ballWidth = 15);
 	bool collidesWithTopWall(int ballWidth = 15);
-	bool collidesWithBottomWall(float windowWidth = 600.0f, int ballWidth = 15);
+	bool collidesWithLeftWall(int ballWidth = 15);
+	bool collidesWithRightWall(float windowWidth = 1024.0f, int ballWidth = 15);
 
 public:
 };

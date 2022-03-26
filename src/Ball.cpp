@@ -1,25 +1,28 @@
 #include "../include/Ball.h"
 
-const float UPDATE_VELOCITY_ON_COLISION = 30.0f;
+const float UPDATE_VELOCITY_ON_COLISION = 1.0f;
 
-bool Ball::collidesWithPaddle(float diff, Paddle paddle)
+bool Ball::collidesWithPaddle(Paddle paddle, int ballWidth)
 {
+	float paddleFinalHeight = paddle.getY() + paddle.getHeight();
+	float ballFinalHeight = this->position.y + ballWidth;
 	float paddleFinalWidth = paddle.getX() + paddle.getWidth();
+	float ballFinalWidth = this->position.x + ballWidth;
 
-	if (diff <= paddle.getHeight() / 2.0f && this->position.x <= paddleFinalWidth && this->position.x >= paddle.getX())
-		return true;
-
-    return false;
+	return (this->position.x >= paddle.getX()
+		&& ballFinalWidth <= paddleFinalWidth
+		&& ballFinalHeight <= paddleFinalHeight
+		&& ballFinalHeight >= paddle.getY());
 }
 
 void Ball::updateBallDirection()
 {
-	if (this->velocity.x > 0)
-		this->velocity.x += UPDATE_VELOCITY_ON_COLISION;
+	if (this->velocity.y > 0)
+		this->velocity.y += UPDATE_VELOCITY_ON_COLISION;
 	else
-		this->velocity.x -= UPDATE_VELOCITY_ON_COLISION;
+		this->velocity.y -= UPDATE_VELOCITY_ON_COLISION;
 
-	this->velocity.x *= -1.0f;
+	this->velocity.y *= -1.0f;
 }
 
 void Ball::reverseBallXDirection()
@@ -32,20 +35,9 @@ void Ball::reverseBallYDirection()
 	this->velocity.y *= -1.0f;
 }
 
-bool Ball::isBallOutOfLeftSide()
+bool Ball::isBallOutOfBottomSide(float windowWidth, int ballWidth)
 {
-	if (this->position.x <= 0.0f)
-		return true;
-
-	return false;
-}
-
-bool Ball::isBallOutOfRightSide(int ballWidth)
-{
-	if (this->position.x >= (1024.0f - ballWidth) && this->velocity.x > 0.0f)
-		return true;
-
-	return false;
+	return (this->position.y > windowWidth);
 }
 
 bool Ball::collidesWithTopWall(int ballWidth)
@@ -56,10 +48,12 @@ bool Ball::collidesWithTopWall(int ballWidth)
 	return false;
 }
 
-bool Ball::collidesWithBottomWall(float windowWidth, int ballWidth)
+bool Ball::collidesWithLeftWall(int ballWidth)
 {
-	if (this->position.y >= (windowWidth - ballWidth) && this->velocity.y > 0.0f)
-		return true;
+	return (this->position.x <= 0);
+}
 
-	return false;
+bool Ball::collidesWithRightWall(float windowWidth, int ballWidth)
+{
+	return (this->position.x >= windowWidth/2 - ballWidth);
 }

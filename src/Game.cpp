@@ -18,7 +18,7 @@ const int thickness = 15;//sera usado para setar a altura de alguns objetos
 const float paddleHeight = 15.0f;//tamanho da raquete
 const float WINDOW_WIDTH = 1024.0f;
 const float WINDOW_HEIGHT = 600.0f;
-const unsigned int MAXIMUM_NUMBER_OF_BALLS = 5;
+const unsigned int MAXIMUM_NUMBER_OF_BALLS = 1;
 
 Game::Game()
 :mWindow(nullptr)//para criar uma janela
@@ -78,10 +78,10 @@ bool Game::Initialize()
 
 
 
-	ball.position.x = 1024.0f / 2.0f;
+	ball.position.x = WINDOW_WIDTH / 4.0f;
 	ball.position.y = WINDOW_HEIGHT / 2.0f;
 	ball.velocity.x = -200.0f;
-	ball.velocity.y = 500.0f;
+	ball.velocity.y = -500.0f;
 
 	balls.push_back(ball);
 
@@ -196,8 +196,8 @@ void Game::UpdateGame()
 
 	if (!isMultiplayerActive)
 		updateSingleGame(deltaTime);
-	else
-		updateMultiplayerGame(deltaTime);
+	//else
+		//updateMultiplayerGame(deltaTime);
 
 }
 
@@ -217,10 +217,7 @@ void Game::updateSingleGame(float deltaTime)
 		balls[i].position.x += balls[i].velocity.x * deltaTime;
 		balls[i].position.y += balls[i].velocity.y * deltaTime;
 
-		float diff = paddleFirstPlayer.getY() - balls[i].position.y;
-		diff = (diff > 0.0f) ? diff : -diff;
-
-		if (balls[i].collidesWithPaddle(diff, paddleFirstPlayer))
+		if (balls[i].collidesWithPaddle(paddleFirstPlayer))
 		{
 
 			if (balls.size() < MAXIMUM_NUMBER_OF_BALLS) {
@@ -234,13 +231,13 @@ void Game::updateSingleGame(float deltaTime)
 
 			balls[i].updateBallDirection();
 
+		}
 
-		}
-		else if (balls[i].isBallOutOfLeftSide())
+		else if (balls[i].collidesWithLeftWall())
 		{
-			// mIsRunning = false;
+			balls[i].reverseBallXDirection();
 		}
-		else if (balls[i].isBallOutOfRightSide())
+		else if (balls[i].collidesWithRightWall(WINDOW_WIDTH))
 		{
 			balls[i].reverseBallXDirection();
 		}
@@ -248,86 +245,12 @@ void Game::updateSingleGame(float deltaTime)
 		{
 			balls[i].reverseBallYDirection();
 		}
-		else if (balls[i].collidesWithBottomWall(WINDOW_HEIGHT))
-		{
-			balls[i].reverseBallYDirection();
+		else if (balls[i].isBallOutOfBottomSide(WINDOW_HEIGHT)) {
+			mIsRunning = false;
 		}
-	}
-}
 
-void Game::updateMultiplayerGame(float deltaTime)
-{
-	//atualiza a posi��o da raquete
-	if (paddleFirstPlayer.isPaddleMoving(mPaddleDir1))
-	{
-		paddleFirstPlayer.updatePaddlePosition(mPaddleDir1, deltaTime, thickness);
 	}
 
-	//atualiza a posi��o da raquete
-	if (paddleSecondPlayer.isPaddleMoving(mPaddleDir2))
-	{
-		paddleSecondPlayer.updatePaddlePosition(mPaddleDir2, deltaTime, thickness);
-	}
-
-	int ballsSize = balls.size();
-
-	for (int i = 0; i < ballsSize; i++) {
-
-		// atualiza a posi��o da bola com base na sua velocidade
-		balls[i].position.x += balls[i].velocity.x * deltaTime;
-		balls[i].position.y += balls[i].velocity.y * deltaTime;
-
-		// atualiza a posi��o da bola se ela colidiu com a raquete
-		float diff = paddleFirstPlayer.getY() - balls[i].position.y;
-		float diff2 = paddleSecondPlayer.getY() - balls[i].position.y;
-
-		diff = (diff > 0.0f) ? diff : -diff;
-		diff2 = (diff2 > 0.0f) ? diff2 : -diff2;
-		if (balls[i].collidesWithPaddle(diff, paddleFirstPlayer) || balls[i].collidesWithPaddle(diff2, paddleSecondPlayer))
-		{
-			if (balls.size() < MAXIMUM_NUMBER_OF_BALLS) {
-				if (generateRandomBool())
-					ball.velocity.x = 1 * 200.0f;
-				else
-					ball.velocity.x = -1 * 200.0f;
-				balls.push_back(ball);
-			}
-
-			balls[i].updateBallDirection();
-		}
-		else if (balls[i].collidesWithTopWall())
-		{
-			balls[i].reverseBallYDirection();
-		}
-		else if (balls[i].collidesWithBottomWall(WINDOW_HEIGHT))
-		{
-			balls[i].reverseBallYDirection();
-		}
-	}
-
-	auto it = balls.begin();
-	int j = 0;
-	while (it != balls.end() && j < ballsSize)
-	{
-		if (balls[j].isBallOutOfLeftSide())
-		{
-			it = balls.erase(it);
-			ballsSize -= 1;
-
-		}
-		else if (balls[j].isBallOutOfRightSide(0))
-		{
-			it = balls.erase(it);
-			ballsSize -= 1;
-
-
-		}
-		else {
-			j++;
-			it++;
-		}
-	}
-		
 }
 
 //Desenhando a tela do jogo
