@@ -12,6 +12,7 @@
 #include "Paddle.h"
 #include "Score.h"
 #include <vector>
+#include "Block.h"
 
 using namespace std;
 
@@ -72,4 +73,6 @@ private:
 
 	Score scoreFirstPlayer;
 	Score scoreSecondPlayer;
+
+	vector<Block> blocos;
 };
