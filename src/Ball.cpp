@@ -10,7 +10,7 @@ bool Ball::collidesWithPaddle(Paddle paddle, int ballWidth)
 	float ballFinalWidth = this->position.x + ballWidth;
 
 	return (this->position.x >= paddle.getX()
-		&& ballFinalWidth <= paddleFinalWidth
+		&& this->position.x <= paddleFinalWidth
 		&& ballFinalHeight <= paddleFinalHeight
 		&& ballFinalHeight >= paddle.getY());
 }

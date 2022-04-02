@@ -80,8 +80,8 @@ bool Game::Initialize()
 
 	ball.position.x = WINDOW_WIDTH / 4.0f;
 	ball.position.y = WINDOW_HEIGHT / 2.0f;
-	ball.velocity.x = -200.0f;
-	ball.velocity.y = -500.0f;
+	ball.velocity.x = 400.0f;
+	ball.velocity.y = -300.0f;
 
 	balls.push_back(ball);
 
@@ -134,11 +134,11 @@ void Game::ProcessInput()
 	mPaddleDir1 = 0;
 	if (state[SDL_SCANCODE_A])
 	{
-		mPaddleDir1 -= 3;
+		mPaddleDir1 -= 1;
 	}
 	else if (state[SDL_SCANCODE_D])
 	{
-		mPaddleDir1 += 3;
+		mPaddleDir1 += 1;
 	}
 	paddleFirstPlayer.changePaddleDirection(mPaddleDir1);
 
@@ -268,7 +268,7 @@ void Game::GenerateOutput()
 		mRenderer,
 		0,		// R
 		0,		// G 
-		255,	// B
+		0,	// B
 		255		// A
 	);
 	
@@ -276,7 +276,7 @@ void Game::GenerateOutput()
 	SDL_RenderClear(mRenderer);
 
 	// Desenha as paredes - mudamos a cor de mRenderer para o desenho dos retangulos que formaram as paredes
-	SDL_SetRenderDrawColor(mRenderer, 255, 0, 255, 255);
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	
 	// Desenha a parede de cima - desenhando um retangulo no topo da tela, coordenada x e y = 0, 0 representa o topo esquerdo
 	//primeiro definimos as coordenadas e tamanhos do triangulo
@@ -288,7 +288,7 @@ void Game::GenerateOutput()
 	};
 	SDL_RenderFillRect(mRenderer, &wall);//finalmente, desenhamos um retangulo no topo
 	
-	SDL_SetRenderDrawColor(mRenderer, 0, 0, 255, 255);
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 
 	//desenhamos as outras paredes apenas mudando as coordenadas de wall
 
@@ -296,7 +296,7 @@ void Game::GenerateOutput()
 	wall.y = static_cast<int>(WINDOW_HEIGHT) - thickness;
 	SDL_RenderFillRect(mRenderer, &wall);
 	
-	SDL_SetRenderDrawColor(mRenderer, 255, 0, 0, 255);
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 
 	// parede da direita
 	wall.x = 1024 - thickness;
@@ -309,7 +309,7 @@ void Game::GenerateOutput()
 	//Game.h para tal
 
 	//mudar a cor da raquete
-	SDL_SetRenderDrawColor(mRenderer, 0, 255, 0, 255);
+	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255);
 
 	//desenhando a raquete - usando mPaddlePos que � uma struc de coordenada que foi definida em Game.h
 	 
@@ -354,8 +354,6 @@ void Game::GenerateOutput()
 	//cout<<blockSize<<endl;
 	for (int i = 0; i < blockSize; i++) {
 
-		cout << i << blocos[i].position.x << endl;
-		cout << i << blocos[i].position.y << endl;
 		// Draw ball
 		SDL_Rect block{
 			static_cast<int>(blocos[i].position.x),
